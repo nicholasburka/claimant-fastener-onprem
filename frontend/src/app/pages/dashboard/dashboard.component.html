@@ -36,7 +36,7 @@
         </nav>
 
         <nav class="nav">
-          <a class="nav-link" routerLink="/" ngbTooltip="not yet implemented"><i class="far fa-save"></i> Export</a>
+          <a class="nav-link" (click)="exportRecords()" ngbTooltip="in development"><i class="far fa-save"></i> Export</a>
           <a class="nav-link" (click)="showAddDashboardLocationModal(addDashboard)"><i class="fas fa-plus"></i> Add</a>
           <a class="nav-link" (click)="showDashboardSettingsModal(dashboardSettings)"><i class="fas fa-sliders-h"></i> Settings</a>
           <a class="nav-link"><i class="fas fa-ellipsis"></i></a>

@@ -183,5 +183,49 @@ export class DashboardComponent implements OnInit {
       },
     );
   }
+  public async exportRecords() {
+    console.log("Export Records");
+    let records = [];
+    let page = 0;
+    let currPageResources = await this.nextPageResources(page);
+    while (currPageResources && (currPageResources.length > 0)) {
+      records = records.concat(currPageResources);
+      page += 1;
+      currPageResources = await this.nextPageResources(page);
+    }
+    console.log("Final Export Records list has length " + records.length);
+    console.log(records);
+    records = records.map((record) => {
+      let rec = record.resource_raw;
+      rec.sort_date = record.sort_date;
+      rec.updated_at = record.updated_at;
+      return {
+        resource: rec, 
+        fullUrl: rec.source_resource_id, 
+        fastenSourceId: rec.source_id
+      };
+    });
+    let bundle = {
+      resourceType: "Bundle",
+      type: "collection",
+      entry: records
+    }
+    //https://stackoverflow.com/questions/19721439/download-json-object-as-a-file-from-browser
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bundle));
+    //let myBlob = new Blob([new Uint8Array(records)], {type: "application/json"});
+    var link = document.createElement('a');
+    link.href = dataStr//window.URL.createObjectURL(myBlob);;
+    link.setAttribute('download', "FastenRecordsExport-" + new Date() + ".json");
+    link.click(); //https://stackoverflow.com/questions/48499087/file-save-functionality-in-angular
+  }
+
+  public async nextPageResources(page: number): Promise<ResourceFhir[]> {
+    return new Promise(resolve => this.fastenApi.getResources(null,null,null,page).subscribe((resourceList) => {
+      console.log("Found resources: ");
+      console.log(resourceList);
+      resolve(resourceList);
+    }));
+    //return [];
+  }
 
 }
